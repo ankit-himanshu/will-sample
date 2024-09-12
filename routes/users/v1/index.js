@@ -17,7 +17,18 @@ router.post(`/register`,
   error
 )
 
+const rateLimit = require('express-rate-limit');
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 login requests per `window` per user
+  message: "Too many login attempts. Try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 router.post(`/login`,
+  loginLimiter,
   login.validate,
   login.signIn,
   login.generateSession,
